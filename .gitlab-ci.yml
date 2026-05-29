@@ -1,0 +1,3 @@
+include:
+  - ".gitlab/ci/common.yml"
+  - ".gitlab/ci/push_main_to_github.yml"
