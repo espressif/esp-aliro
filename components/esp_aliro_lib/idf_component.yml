@@ -1,0 +1,5 @@
+dependencies:
+  espressif/cbor:
+    version: "0.6.1~4"
+  idf:
+    version: ">=5.2"

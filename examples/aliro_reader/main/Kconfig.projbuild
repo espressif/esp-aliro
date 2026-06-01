@@ -1,0 +1,67 @@
+menu "Aliro reader example"
+
+menu "Aliro protocol"
+
+config SUPPORT_FAST_TRANSACTION_PHASE
+    bool "Support fast transaction phase"
+    default n
+    help
+        Enable the expedited-fast path. When disabled, the reader uses the
+        expedited-standard path and proceeds through AUTH1 before EXCHANGE.
+
+config SUPPORT_KEYSLOT
+    bool "Support credential public key lookup by key slot"
+    default n
+    help
+        Allow the user device to return a credential key slot instead of the
+        full credential public key. The example resolves the configured test
+        credential public key from that key slot.
+
+choice READER_CERT_POLICY
+    prompt "Reader certificate delivery"
+    default READER_CERT_POLICY_DO_NOT_SEND
+    help
+        Select how the reader certificate is used during expedited-standard
+        authentication. The Aliro protocol allows the certificate to be sent
+        with LOAD CERT, included in AUTH1, or omitted when the user device can
+        authenticate the reader public key by other provisioned context.
+
+    config READER_CERT_POLICY_SEND_VIA_LOAD_CERT
+        bool "Send reader certificate via LOAD CERT"
+        help
+            Send the compressed reader certificate in a LOAD CERT command before
+            AUTH1. This matches the default example flow.
+
+    config READER_CERT_POLICY_SEND_VIA_AUTH1
+        bool "Send reader certificate via AUTH1"
+        help
+            Include the compressed reader certificate in AUTH1 instead of sending a
+            separate LOAD CERT command.
+
+    config READER_CERT_POLICY_DO_NOT_SEND
+        bool "Do not send reader certificate"
+        help
+            Do not send a reader certificate. Use this only when the user device can
+            verify the reader signature through a previously provisioned reader key
+            or equivalent installation-specific trust context.
+
+endchoice # choice READER_CERT_POLICY
+
+config SUPPORT_MAILBOX
+    bool "Support mailbox exchange after expedited phase"
+    default n
+    help
+        After expedited authentication, issue an EXCHANGE command carrying
+        mailbox read/write/set requests before the normal EXCHANGE command.
+
+config SUPPORT_STEPUP_PHASE
+    bool "Support step-up phase"
+    default n
+    help
+        After expedited-standard authentication, send an ENVELOPE command to
+        enter the step-up phase and use step-up crypto for following EXCHANGE
+        commands. Fast transactions skip this step-up ENVELOPE.
+
+endmenu # menu "Aliro protocol"
+
+endmenu # menu "Aliro reader example"

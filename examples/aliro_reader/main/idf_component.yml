@@ -1,0 +1,4 @@
+dependencies:
+  esp_aliro_lib:
+    path: ../../../components/esp_aliro_lib
+  idf: ">=5.2"
