@@ -148,6 +148,59 @@ esp_err_t esp_aliro_reader_enable(esp_aliro_reader_handle_t handle);
 esp_err_t esp_aliro_reader_disable(esp_aliro_reader_handle_t handle);
 
 /**
+ * @brief Get the reader group identifier.
+ *
+ * The group_identifier buffer must be at least 16 bytes.
+ *
+ * @param[in] handle Reader handle
+ * @param[out] group_identifier Reader group identifier buffer
+ * @param[inout] group_identifier_len Input: group_identifier capacity. Output: identifier length in bytes.
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_SIZE if group_identifier is too small
+ */
+esp_err_t esp_aliro_reader_get_group_identifier(esp_aliro_reader_handle_t handle, uint8_t *group_identifier,
+                                                size_t *group_identifier_len);
+
+/**
+ * @brief Get the reader group sub-identifier.
+ *
+ * The group_sub_identifier buffer must be at least 16 bytes.
+ *
+ * @param[in] handle Reader handle
+ * @param[out] group_sub_identifier Reader group sub-identifier buffer
+ * @param[inout] group_sub_identifier_len Input: group_sub_identifier capacity. Output: sub-identifier length in bytes.
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_SIZE if group_sub_identifier is too small
+ *      - ESP_ERR_INVALID_STATE if reader is not enabled
+ *      - Other esp_err_t values from storage initialization
+ */
+esp_err_t esp_aliro_reader_get_group_sub_identifier(esp_aliro_reader_handle_t handle, uint8_t *group_sub_identifier,
+                                                    size_t *group_sub_identifier_len);
+
+/**
+ * @brief Get the reader public key raw data.
+ *
+ * The public_key_raw_data buffer must be at least 65 bytes.
+ *
+ * @param[in] handle Reader handle
+ * @param[out] public_key_raw_data Reader public key raw-data buffer
+ * @param[inout] public_key_raw_data_len Input: public_key_raw_data capacity. Output: raw-data length in bytes.
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_SIZE if public_key_raw_data is too small
+ */
+esp_err_t esp_aliro_reader_get_public_key_raw_data(esp_aliro_reader_handle_t handle, uint8_t *public_key_raw_data,
+                                                   size_t *public_key_raw_data_len);
+
+/**
  * @brief Create and initialize an Aliro transaction session.
  *
  * The reader must be enabled before creating a session.

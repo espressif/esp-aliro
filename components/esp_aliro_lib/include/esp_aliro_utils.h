@@ -32,6 +32,40 @@ esp_err_t esp_aliro_get_key_slot_from_cred_pubkey(const char *cred_pubkey_pem, s
                                                   uint8_t *key_slot, size_t *key_slot_len);
 
 /**
+ * @brief Convert public key raw data to X.509 PEM format.
+ *
+ * @param[in] raw_data Public key raw data
+ * @param[in] raw_data_len Public key raw-data length in bytes
+ * @param[out] pub_key_pem Output X.509 PEM buffer
+ * @param[inout] pub_key_pem_len Input: pub_key_pem capacity. Output: PEM length in bytes.
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_SIZE if pub_key_pem is too small
+ *      - ESP_FAIL if the public key cannot be parsed
+ */
+esp_err_t esp_aliro_get_pubkey_pem_from_raw_data(const uint8_t *raw_data, size_t raw_data_len, char *pub_key_pem,
+                                                 size_t *pub_key_pem_len);
+
+/**
+ * @brief Convert private key raw data to X.509 PEM format.
+ *
+ * @param[in] raw_data Private key raw data
+ * @param[in] raw_data_len Private key raw-data length in bytes
+ * @param[out] priv_key_pem Output X.509 PEM buffer
+ * @param[inout] priv_key_pem_len Input: priv_key_pem capacity. Output: PEM length in bytes.
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_SIZE if priv_key_pem is too small
+ *      - ESP_FAIL if the private key cannot be parsed
+ */
+esp_err_t esp_aliro_get_privkey_pem_from_raw_data(const uint8_t *raw_data, size_t raw_data_len, char *priv_key_pem,
+                                                  size_t *priv_key_pem_len);
+
+/**
  * @brief Clear fast-transaction persistent storage.
  *
  * This clears stored fast-transaction keys only. It does not clear the reader group sub-identifier. When fast
