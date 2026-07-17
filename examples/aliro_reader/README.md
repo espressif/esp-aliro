@@ -33,7 +33,7 @@ Please check below stuff before running the commands
 
 ```sh
 cd /path/to/esp-aliro/examples/aliro_reader
-idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.BOARD" set-target TARGET build
+idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.BOARD" build
 idf.py -p <port> erase-flash flash monitor
 ```
 
