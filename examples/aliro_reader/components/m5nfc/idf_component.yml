@@ -1,5 +1,5 @@
 dependencies:
-  idf: ">=5.2,<6"
+  idf: ">=5.2"
   m5stack/M5Unit-NFC:
     git: https://github.com/m5stack/M5Unit-NFC.git
-    version: e235d463170ec57293d34114de55816186ce8dd2
+    version: 93745b547364f310cd64b5155a870103a7800a5d
