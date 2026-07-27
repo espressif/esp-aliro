@@ -1,0 +1,21 @@
+pre_commit:
+  stage: pre_commit
+  image: "$CI_REGISTRY/ci/images/pre-commit-python3.12:1"
+  tags:
+    - build
+  script: |
+    pre-commit install-hooks
+    if [ "$CI_COMMIT_BRANCH" = "$CI_DEFAULT_BRANCH" ]; then
+      BASE_COMMIT="$CI_COMMIT_BEFORE_SHA"
+    else
+      git fetch origin "$CI_DEFAULT_BRANCH"
+      BASE_COMMIT=$(git merge-base "origin/$CI_DEFAULT_BRANCH" HEAD)
+    fi
+    FILES=$(git diff --name-only --diff-filter=ACMRT "${BASE_COMMIT}...HEAD")
+    if [ -n "$FILES" ]; then
+      echo "Running pre-commit on changed files:"
+      echo "$FILES"
+      echo "$FILES" | xargs pre-commit run --files
+    else
+      echo "No files changed, skipping pre-commit"
+    fi

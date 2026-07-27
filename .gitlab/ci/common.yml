@@ -1,5 +1,6 @@
 stages:
-  - deploy
+  - pre_commit
+  - build
 
 default:
   interruptible: true
@@ -7,12 +8,12 @@ default:
 workflow:
   rules:
     - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
-      when: never
+    - if: "$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH"
+    - when: never
 
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      auto_cancel:
-        on_new_commit: none
-
-    - when: always
-      auto_cancel:
-        on_new_commit: interruptible
+variables:
+  GIT_SUBMODULE_STRATEGY: none
+  IDF_CCACHE_ENABLE: "1"
+  CCACHE_NOHASHDIR: "1"
+  CCACHE_SLOPPINESS: "locale,time_macros,random_seed"
+  IDF_PATH: "$CI_PROJECT_DIR/esp-idf"

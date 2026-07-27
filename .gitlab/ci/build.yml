@@ -1,0 +1,26 @@
+build_aliro_reader:
+  stage: build
+  image: "$CI_REGISTRY/ci/images/${IDF_IMAGE}:1"
+  tags:
+    - build
+  needs:
+    - pre_commit
+  parallel:
+    matrix:
+      - IDF_IMAGE: idf-v5.2
+        IDF_VERSION: v5.2.7
+      - IDF_IMAGE: idf-v5.3
+        IDF_VERSION: v5.3.5
+      - IDF_IMAGE: idf-v5.4
+        IDF_VERSION: v5.4.4
+      - IDF_IMAGE: idf-v5.5
+        IDF_VERSION: v5.5.5
+      - IDF_IMAGE: idf-v6.0
+        IDF_VERSION: v6.0.2
+  before_script: |
+    python .gitlab/ci/setup_idf.py --version "$IDF_VERSION"
+    source "$IDF_PATH/export.sh"
+  script: |
+    idf.py -C examples/aliro_reader \
+      -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.nanoh2" \
+      build
