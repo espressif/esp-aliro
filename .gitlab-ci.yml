@@ -1,3 +1,4 @@
 include:
-  - ".gitlab/ci/common.yml"
-  - ".gitlab/ci/push_main_to_github.yml"
+  - local: .gitlab/ci/common.yml
+  - local: .gitlab/ci/pre_commit.yml
+  - local: .gitlab/ci/build.yml
