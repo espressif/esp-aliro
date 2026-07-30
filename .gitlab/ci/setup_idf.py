@@ -104,7 +104,7 @@ def main() -> int:
         cwd=idf_path,
     )
 
-    install_command = ["bash", "install.sh", "--enable-ci"]
+    install_command = ["bash", "install.sh"]
     if not args.version.startswith("v6."):
         install_command.append("--enable-pytest")
 
