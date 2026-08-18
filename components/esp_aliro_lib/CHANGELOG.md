@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.2.0 (2026-08-11)
+
+- Added NFC APDU command and response chaining with extended-length capability negotiation.
+- Added Reader Descriptor configuration and reporting through EXCHANGE and failure CONTROL FLOW commands.
+
 ## 1.1.0 (2026-07-30)
 
 - Added support for ESP32-C61.
