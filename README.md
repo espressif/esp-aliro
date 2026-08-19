@@ -15,6 +15,8 @@ Currently, Espressif's SDK for Aliro supports the following features of Aliro-ov
 - Keyslot to Look up Access Credential Public Key
 - Mailbox of Exchange command
 - Step-up Phase
+- Reader Descriptor reporting
+- Extended or Chaining APDU in NFC Transport
 
 ## Getting Started
 
