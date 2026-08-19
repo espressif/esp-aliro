@@ -7,6 +7,7 @@
 #pragma once
 
 #include <esp_err.h>
+#include <stdbool.h>
 #include <stddef.h>
 #include <stdint.h>
 
@@ -15,6 +16,14 @@ extern "C" {
 #endif
 
 #define ESP_ALIRO_READER_VENDOR_EXT_MAX_LEN 127
+
+typedef struct {
+    uint8_t vendor_id[3];
+    const uint8_t *product_id;
+    size_t product_id_len;
+    const uint8_t *firmware_version;
+    size_t firmware_version_len;
+} esp_aliro_reader_descriptor_t;
 
 typedef uintptr_t esp_aliro_reader_handle_t;
 typedef uintptr_t esp_aliro_session_handle_t;
@@ -59,6 +68,7 @@ typedef enum {
 typedef struct {
     esp_aliro_nfc_aid_type_t aid_type;   /*!< NFC AID type */
     esp_aliro_auth_policy_t auth_policy; /*!< Authentication policy */
+    bool extended_apdu;                  /*!< Local NFC transport supports extended command APDUs */
 } esp_aliro_session_config_t;
 
 typedef enum {

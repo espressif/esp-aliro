@@ -102,6 +102,26 @@ esp_err_t esp_aliro_reader_set_vendor_ext(esp_aliro_reader_handle_t handle, cons
                                           size_t vendor_ext_len);
 
 /**
+ * @brief Configure the optional Reader Descriptor sent once per transaction.
+ *
+ * This must be called before the reader is enabled. The descriptor is copied into reader-owned storage. Passing NULL
+ * clears the configured descriptor. Product ID and firmware version must be non-empty, and the complete DER-TLV
+ * descriptor must fit both EXCHANGE Notify and CONTROL FLOW command limits.
+ *
+ * @param[in] handle Reader handle
+ * @param[in] descriptor Reader Descriptor configuration, or NULL to clear it
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if an argument or counted pointer is invalid, or a mandatory field is empty
+ *      - ESP_ERR_INVALID_SIZE if the encoded descriptor exceeds a protocol command limit
+ *      - ESP_ERR_INVALID_STATE if the reader is enabled
+ *      - ESP_ERR_NO_MEM if allocation fails
+ */
+esp_err_t esp_aliro_reader_set_descriptor(esp_aliro_reader_handle_t handle,
+                                          const esp_aliro_reader_descriptor_t *descriptor);
+
+/**
  * @brief Enable credential key-slot lookup for the reader.
  *
  * This must be called before the reader is enabled.
