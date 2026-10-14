@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Espressif Systems (Shanghai) CO LTD
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """Prepare an exact ESP-IDF checkout using tools cached in the CI image."""
 
 from __future__ import annotations

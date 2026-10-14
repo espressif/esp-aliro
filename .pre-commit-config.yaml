@@ -4,6 +4,12 @@ repos:
     hooks:
       - id: keep-sorted
 
+  - repo: https://github.com/espressif/check-copyright
+    rev: v1.1.1
+    hooks:
+      - id: check-copyright
+        args: [--config, .check-copyright.yaml]
+
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.2
     hooks:
