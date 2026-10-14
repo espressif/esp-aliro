@@ -130,6 +130,19 @@ def main() -> int:
         cwd=idf_path,
         env=install_env,
     )
+    run(
+        [
+            sys.executable,
+            "tools/idf_tools.py",
+            "--non-interactive",
+            "install",
+            "cmake",
+        ],
+        log_file,
+        "Install ESP-IDF CMake",
+        cwd=idf_path,
+        env=install_env,
+    )
 
     if args.install_qemu:
         run(
