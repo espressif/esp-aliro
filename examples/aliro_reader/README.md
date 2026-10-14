@@ -22,7 +22,7 @@ We have tested with below devices:
 
 ## Prerequisite
 
-We have developed this example based on ESP-IDF v5.5.3, but any ESP-IDF version `>=5.2,<6` should be fine.
+Use an ESP-IDF version matching `dependencies.idf.version` in the [esp_aliro_lib component manifest](../../components/esp_aliro_lib/idf_component.yml).
 
 ## Build, Flash, Run
 
@@ -33,16 +33,16 @@ Please check below stuff before running the commands
 
 ```sh
 cd /path/to/esp-aliro/examples/aliro_reader
-idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.BOARD" build
+idf.py -D SDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.BOARD" set-target TARGET build
 idf.py -p <port> erase-flash flash monitor
 ```
 
 ## Validation
 
-On boot, the reader should log a successful ST25R3916 identity read at I2C address `0x50`. When an ISO-14443-4 NFC-A user device is presented, the reader logs ATQA, UID, SAK, and ATS length, then starts the Aliro transaction.
+For end-to-end validation, use the [aliro-actuator](https://github.com/aliro-access-control/aliro-actuator). Follow its setup instructions, then copy [esp_aliro_user_device.py](esp_aliro_user_device.py) into its `examples/nfc/` directory. Run from the actuator checkout root:
 
-> [!NOTE]
->
-> [CSA aliro-actuator reference](https://github.com/aliro-access-control/aliro-actuator) is still in private access as of May 29 2026; request access by applying to CSA.
+```sh
+python3 -m examples.nfc.esp_aliro_user_device
+```
 
-For end-to-end Aliro validation, we recommend using [CSA aliro-actuator reference](https://github.com/aliro-access-control/aliro-actuator).
+The referenced actuator commit and provisioning are in [main/fixture.c](main/fixture.c). Use these development keys only for testing.

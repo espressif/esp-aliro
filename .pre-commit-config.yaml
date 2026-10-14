@@ -21,3 +21,12 @@ repos:
     hooks:
       - id: prettier
         types_or: [markdown, yaml]
+
+  - repo: local
+    hooks:
+      - id: check-document-validation-time
+        name: Check document fixture validation time
+        entry: python3 examples/aliro_reader/check_document_validation_time.py
+        language: system
+        always_run: true
+        pass_filenames: false
