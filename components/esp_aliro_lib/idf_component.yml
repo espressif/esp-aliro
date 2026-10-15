@@ -1,10 +1,10 @@
-version: "1.2.0"
+version: "1.3.0"
 description: ESP Aliro Library
 url: https://github.com/espressif/esp-aliro/tree/main/components/esp_aliro_lib
 repository: https://github.com/espressif/esp-aliro.git
 
 dependencies:
   espressif/cbor:
-    version: "0.6.1~4"
+    version: "7.0.0"
   idf:
-    version: ">=5.2,<6.1"
+    version: ">=5.3,<6.2"
