@@ -1,4 +1,8 @@
 dependencies:
   esp_aliro_lib:
     path: ../../../components/esp_aliro_lib
-  idf: ">=5.2"
+  espressif/cbor:
+    version: "7.0.0"
+  idf: ">=5.3"
+  m5nfc:
+    path: ../components/m5nfc

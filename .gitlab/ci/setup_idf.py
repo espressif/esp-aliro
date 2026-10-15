@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+# SPDX-FileCopyrightText: 2026 Espressif Systems (Shanghai) CO LTD
+#
+# SPDX-License-Identifier: Apache-2.0
+
 """Prepare an exact ESP-IDF checkout using tools cached in the CI image."""
 
 from __future__ import annotations
@@ -123,6 +127,19 @@ def main() -> int:
         install_command,
         log_file,
         "Install ESP-IDF tools",
+        cwd=idf_path,
+        env=install_env,
+    )
+    run(
+        [
+            sys.executable,
+            "tools/idf_tools.py",
+            "--non-interactive",
+            "install",
+            "cmake",
+        ],
+        log_file,
+        "Install ESP-IDF CMake",
         cwd=idf_path,
         env=install_env,
     )

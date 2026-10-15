@@ -12,6 +12,31 @@
 extern "C" {
 #endif
 
+/**
+ * @file
+ * @brief Authentication and document-access flow (pseudocode).
+ *
+ * @code
+ * initialize SDK; create/configure/enable reader; create session
+ *
+ * check(run_expedited(session, exchange, &identity))
+ *   fast match: AUTH0 -> authenticated identity
+ *   otherwise: AUTH0 -> optional LOAD CERT -> AUTH1 -> authenticated identity
+ *
+ * if application_needs_documents(identity):
+ *   check(continue_standard(session, exchange, &identity))
+ *     fast: optional LOAD CERT -> AUTH1, without restarting AUTH0
+ *     standard: return current authenticated identity, without I/O
+ *   check(run_envelope(session, exchange, request, &response))
+ *     optional step-up SELECT -> ENVELOPE / GET RESPONSE
+ *   check(verify_required_documents(response, identity))
+ *
+ * authorize identity and any required documents
+ * if authorized: check(commit_fast_transaction(session))
+ * report the access outcome using EXCHANGE; delete session
+ * @endcode
+ */
+
 typedef esp_err_t (*esp_aliro_lookup_credential_pubkey_cb_t)(const uint8_t *key_slot, size_t key_slot_len,
                                                              char *out_pubkey, size_t *out_pubkey_len);
 
@@ -122,6 +147,38 @@ esp_err_t esp_aliro_reader_set_descriptor(esp_aliro_reader_handle_t handle,
                                           const esp_aliro_reader_descriptor_t *descriptor);
 
 /**
+ * @brief Attach fast-transaction storage to a disabled Reader.
+ *
+ * The callback table and context value are copied. The pointed-to context remains caller-owned and must stay valid
+ * until the Reader is deleted. All callback invocations for this Reader are serialized. A Reader without a delegate
+ * does not attempt fast transactions. The delegate must not call Reader storage APIs recursively.
+ *
+ * @param[in] handle Reader handle
+ * @param[in] delegate Complete storage callback table
+ *
+ * @return
+ *      - ESP_OK on success
+ *      - ESP_ERR_INVALID_ARG if the handle or callback table is invalid
+ *      - ESP_ERR_INVALID_STATE if the Reader is enabled
+ *      - ESP_ERR_NO_MEM if synchronization allocation fails
+ */
+esp_err_t esp_aliro_reader_set_fast_transaction_storage_delegate(
+    esp_aliro_reader_handle_t handle, const esp_aliro_fast_transaction_storage_delegate_t *delegate);
+
+/**
+ * @brief Clear the Reader's fast-transaction storage.
+ *
+ * This is an ESP_OK no-op when no delegate is attached. The delegate remains attached. Active Sessions are not
+ * cancelled; an in-flight fast authentication may finish after this call and still requires application approval and
+ * an explicit commit.
+ *
+ * @param[in] handle Reader handle
+ *
+ * @return ESP_OK on success, ESP_ERR_INVALID_ARG for an invalid handle, or the delegate error.
+ */
+esp_err_t esp_aliro_reader_clear_fast_transaction_storage(esp_aliro_reader_handle_t handle);
+
+/**
  * @brief Enable credential key-slot lookup for the reader.
  *
  * This must be called before the reader is enabled.
@@ -140,8 +197,8 @@ esp_err_t esp_aliro_reader_enable_key_slot(esp_aliro_reader_handle_t handle,
 /**
  * @brief Enable the reader.
  *
- * Enabling loads or creates the persisted reader group sub-identifier and initializes fast-transaction storage when
- * configured. Calling this on an already enabled reader is a no-op.
+ * Enabling loads or creates the persisted reader group sub-identifier. Calling this on an already enabled Reader is a
+ * no-op.
  *
  * @param[in] handle Reader handle
  *
@@ -268,8 +325,13 @@ esp_err_t esp_aliro_session_get_transaction_type(esp_aliro_session_handle_t hand
 /**
  * @brief Run the expedited transaction phase.
  *
+ * Successful fast authentication may continue standard in the same transaction
+ * through esp_aliro_session_continue_standard().
+ *
  * @param[in] handle Session handle
  * @param[in] msg_exchange_cb Callback used to exchange APDU messages with the user device
+ * @param[out] out_result Authenticated credential and optional signed timestamp; cleared before processing and on
+ * failure.
  *
  * @return
  *      - ESP_OK on success
@@ -277,7 +339,50 @@ esp_err_t esp_aliro_session_get_transaction_type(esp_aliro_session_handle_t hand
  *      - Other esp_err_t values from transaction processing or transport
  */
 esp_err_t esp_aliro_session_run_expedited(esp_aliro_session_handle_t handle,
-                                          esp_aliro_message_exchange_cb_t msg_exchange_cb);
+                                          esp_aliro_message_exchange_cb_t msg_exchange_cb,
+                                          esp_aliro_expedited_result_t *out_result);
+
+/**
+ * @brief Continue fast authentication through the standard phase in the same transaction.
+ *
+ * Call after expedited authentication, before EXCHANGE, ENVELOPE, or commit.
+ * Already-standard sessions return their current result without I/O.
+ *
+ * Fast sessions reuse AUTH0 and perform optional LOAD CERT and AUTH1 for the same credential. Success
+ * replaces the result (clearing any omitted timestamp) and prepares a new storage entry for explicit
+ * commit. Authentication or transport failure invalidates the session; do not authorize using the
+ * earlier fast result.
+ *
+ * @param[in] handle Session handle
+ * @param[in] msg_exchange_cb Callback used to exchange APDU messages with the user device
+ * @param[out] out_result Standard-authenticated result; cleared before processing and on failure
+ *
+ * @return
+ *      - ESP_OK on success, including an already-standard session
+ *      - ESP_ERR_INVALID_ARG if any argument is invalid
+ *      - ESP_ERR_INVALID_STATE before authentication, after traffic/commit, or while busy
+ *      - Other esp_err_t values from authentication or transport
+ */
+esp_err_t esp_aliro_session_continue_standard(esp_aliro_session_handle_t handle,
+                                              esp_aliro_message_exchange_cb_t msg_exchange_cb,
+                                              esp_aliro_expedited_result_t *out_result);
+
+/**
+ * @brief Apply the authenticated Session's pending fast-transaction storage mutation.
+ *
+ * Call this exactly once after successful expedited authentication and application authorization. Standard
+ * transactions store the newly derived entry; fast transactions touch the matched entry. Deleting the Session without
+ * committing discards the pending entry. A Reader without a delegate performs a successful no-op commit.
+ *
+ * @param[in] handle Session handle
+ *
+ * @return
+ *      - ESP_OK when committed, including when no storage delegate is attached
+ *      - ESP_ERR_INVALID_ARG if handle is invalid
+ *      - ESP_ERR_INVALID_STATE before successful authentication or after a prior commit
+ *      - Other esp_err_t values returned by the delegate
+ */
+esp_err_t esp_aliro_session_commit_fast_transaction(esp_aliro_session_handle_t handle);
 
 /**
  * @brief Run an exchange transaction without mailbox requests.

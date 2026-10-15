@@ -7,16 +7,16 @@ build_aliro_reader:
     - pre_commit
   parallel:
     matrix:
-      - IDF_IMAGE: idf-v5.2
-        IDF_VERSION: v5.2.7
       - IDF_IMAGE: idf-v5.3
-        IDF_VERSION: v5.3.5
+        IDF_VERSION: v5.3.6
       - IDF_IMAGE: idf-v5.4
         IDF_VERSION: v5.4.4
       - IDF_IMAGE: idf-v5.5
         IDF_VERSION: v5.5.5
       - IDF_IMAGE: idf-v6.0
-        IDF_VERSION: v6.0.2
+        IDF_VERSION: v6.0.3
+      - IDF_IMAGE: idf-v6.1
+        IDF_VERSION: v6.1
   before_script: |
     python .gitlab/ci/setup_idf.py --version "$IDF_VERSION"
     source "$IDF_PATH/export.sh"

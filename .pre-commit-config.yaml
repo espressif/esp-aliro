@@ -4,6 +4,12 @@ repos:
     hooks:
       - id: keep-sorted
 
+  - repo: https://github.com/espressif/check-copyright
+    rev: v1.1.1
+    hooks:
+      - id: check-copyright
+        args: [--config, .check-copyright.yaml]
+
   - repo: https://github.com/pre-commit/mirrors-clang-format
     rev: v19.1.2
     hooks:
@@ -21,3 +27,12 @@ repos:
     hooks:
       - id: prettier
         types_or: [markdown, yaml]
+
+  - repo: local
+    hooks:
+      - id: check-document-validation-time
+        name: Check document fixture validation time
+        entry: python3 examples/aliro_reader/check_document_validation_time.py
+        language: system
+        always_run: true
+        pass_filenames: false
