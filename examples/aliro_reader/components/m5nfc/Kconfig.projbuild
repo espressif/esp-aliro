@@ -13,7 +13,11 @@ config ST25R3916_I2C_PORT
     default 0
 
 config ST25R3916_TRANSCEIVE_TIMEOUT_MS
-    int "Default ISO-DEP transceive timeout (ms)"
+    int "Minimum ISO-DEP frame timeout (ms)"
+    range 1 60000
     default 100
+    help
+        Frame waiting time is the larger of this value and the peer ATS value.
+        WTX extends individual waits; a whole APDU is limited to 60 seconds.
 
 endmenu # menu "ST25R3916 reader"
