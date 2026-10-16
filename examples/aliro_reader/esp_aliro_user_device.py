@@ -2,6 +2,7 @@
 #
 # SPDX-License-Identifier: Apache-2.0
 
+import argparse
 import asyncio
 import hashlib
 import os
@@ -80,7 +81,7 @@ def create_access_document(
     )
 
 
-async def main() -> None:
+async def main(*, extended_apdu: bool) -> None:
     keys = Path(__file__).resolve().parent
     reader_public_key = PublicKey(
         (keys / "reader_public_key.pem").read_text(encoding="ascii")
@@ -104,16 +105,26 @@ async def main() -> None:
         access_credentials=[
             AccessCredential(credential_keypair, reader_identifier_list)
         ],
-        mailbox=0x64,
+        mailbox=512,
         access_document=create_access_document(
             credential_keypair.get_public_key(), issuer_private_key
         ),
         revocation_document=None,
         mode=UserMode.USER,
     )
-    device.apdu.set_extended_length(command_length=512, response_length=512)
+    if extended_apdu:
+        device.apdu.set_extended_length(command_length=512, response_length=512)
     await device.main_loop()
 
 
 if __name__ == "__main__":
-    asyncio.run(main())
+    parser = argparse.ArgumentParser(
+        description="Aliro NFC user device for the ESP-IDF reader example."
+    )
+    parser.add_argument(
+        "--extended-apdu",
+        action="store_true",
+        help="advertise 512-byte extended APDU support (default: short APDU chaining)",
+    )
+    args = parser.parse_args()
+    asyncio.run(main(extended_apdu=args.extended_apdu))

@@ -38,14 +38,20 @@ enum { k_certificate_policy = ESP_ALIRO_CERT_POLICY_NONE, k_reader_group_suffix 
 #endif // CONFIG_READER_CERT_POLICY_SEND_VIA_LOAD_CERT || CONFIG_READER_CERT_POLICY_SEND_VIA_AUTH1
 
 static const uint8_t k_document_element[] = "floor1";
-static const uint8_t k_mailbox_write_data[] = {0x00, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77};
+// Exceeds short-APDU Lc while fitting the peer's 512-byte command limit.
+static const uint8_t k_mailbox_write_data[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+                                              "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+                                              "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+                                              "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/"
+                                              "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz+/";
 static const esp_aliro_exchange_read_request_t k_mailbox_read = {.offset = 0, .length = 8};
 static const esp_aliro_exchange_write_request_t k_mailbox_write = {
     .offset = 0,
     .data = k_mailbox_write_data,
-    .data_len = sizeof(k_mailbox_write_data),
+    .data_len = sizeof(k_mailbox_write_data) - 1,
 };
-static const esp_aliro_exchange_set_request_t k_mailbox_set = {.offset = 8, .length = 8, .value = 0xFF};
+static const esp_aliro_exchange_set_request_t k_mailbox_set = {
+    .offset = sizeof(k_mailbox_write_data) - 1, .length = 8, .value = 0xFF};
 
 const aliro_reader_fixture_t k_actuator_fixture = {
     .reader =

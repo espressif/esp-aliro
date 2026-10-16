@@ -114,6 +114,7 @@ static void nfc_detect_task(void *params)
         esp_aliro_session_config_t config = {
             .aid_type = ESP_ALIRO_NFC_AID_EXPEDITED_PHASE,
             .auth_policy = ESP_ALIRO_AUTH_POLICY_USER_DEVICE_SETTING_SECURE_ACTION,
+            .extended_apdu = true,
         };
         esp_aliro_expedited_result_t authentication;
         esp_aliro_session_handle_t session = 0;
