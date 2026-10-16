@@ -9,7 +9,7 @@ This example demonstrates an Aliro NFC reader using [M5Stack Unit NFC](https://d
 An [M5Stack Controllers](https://shop.m5stack.com/collections/controllers) with:
 
 - HY2.0-4P I2C Port.
-- Chip/Target supported by [M5Unit-NFC](https://github.com/m5stack/M5Unit-NFC).
+- An ESP-IDF target supported by the Aliro SDK, with an I2C master controller.
 
 We have tested with below devices:
 
